@@ -336,8 +336,8 @@ class Pyomo(Dispatcher):
     done_and_checked = False
     attempts = 0
     # DEBUGG show variables, bounds
-    if self.debug_mode:
-      # self._debug_pyomo_print(m)
+    # if self.debug_mode:
+    #   # self._debug_pyomo_print(m)
     while not done_and_checked:
       attempts += 1
       # print(f'DEBUGG solve attempt {attempts} ...:')
@@ -345,13 +345,13 @@ class Pyomo(Dispatcher):
       soln = pyo.SolverFactory(self._solver).solve(m, options=self.solve_options)
       # check solve status
       if soln.solver.status == SolverStatus.ok and soln.solver.termination_condition == TerminationCondition.optimal:
-        # print('DEBUGG ... solve was successful!')
+        print('DEBUGG ... solve was successful!')
       else:
-        # print('DEBUGG ... solve was unsuccessful!')
-        # print('DEBUGG ... status:', soln.solver.status)
-        # print('DEBUGG ... termination:', soln.solver.termination_condition)
-        # self._debug_pyomo_print(m)
-        # print('Resource Map:')
+      #   # print('DEBUGG ... solve was unsuccessful!')
+      #   # print('DEBUGG ... status:', soln.solver.status)
+      #   # print('DEBUGG ... termination:', soln.solver.termination_condition)
+      #   # self._debug_pyomo_print(m)
+      #   # print('Resource Map:')
         pprint.pprint(m.resource_index_map)
         raise RuntimeError(f"Solve was unsuccessful! Status: {soln.solver.status} Termination: {soln.solver.termination_condition}")
       # try validating
