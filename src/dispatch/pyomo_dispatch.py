@@ -203,7 +203,7 @@ class Pyomo(Dispatcher):
         raise IOError("A rolling window of length 1 was requested, but this causes crashes in pyomo. " +
                       "Change the length of the rolling window to avoid length 1 histories.")
       specific_time = time[start_index:end_index]
-      print(f'DEBUGG starting window {start_index} to {end_index}')
+      # print(f'DEBUGG starting window {start_index} to {end_index}')
       start = time_mod.time()
       # set initial storage levels
       initial_levels = {}
@@ -227,14 +227,14 @@ class Pyomo(Dispatcher):
                                       initial_levels, meta)
         # do we need a convergence criteria? Check now.
         if self.needs_convergence(components):
-          print(f'DEBUGG iteratively solving window, iteration {conv_counter}/{self._picard_limit} ...')
+          # print(f'DEBUGG iteratively solving window, iteration {conv_counter}/{self._picard_limit} ...')
           converged = self.check_converged(subdisp, previous, components)
           previous = subdisp
         else:
           converged = True
 
       end = time_mod.time()
-      print(f'DEBUGG solve time: {end-start} s')
+      # print(f'DEBUGG solve time: {end-start} s')
       # store result in corresponding part of dispatch
       for comp in components:
         for tag in comp.get_tracking_vars():
@@ -337,43 +337,43 @@ class Pyomo(Dispatcher):
     attempts = 0
     # DEBUGG show variables, bounds
     if self.debug_mode:
-      self._debug_pyomo_print(m)
+      # self._debug_pyomo_print(m)
     while not done_and_checked:
       attempts += 1
-      print(f'DEBUGG solve attempt {attempts} ...:')
+      # print(f'DEBUGG solve attempt {attempts} ...:')
       # solve
       soln = pyo.SolverFactory(self._solver).solve(m, options=self.solve_options)
       # check solve status
       if soln.solver.status == SolverStatus.ok and soln.solver.termination_condition == TerminationCondition.optimal:
-        print('DEBUGG ... solve was successful!')
+        # print('DEBUGG ... solve was successful!')
       else:
-        print('DEBUGG ... solve was unsuccessful!')
-        print('DEBUGG ... status:', soln.solver.status)
-        print('DEBUGG ... termination:', soln.solver.termination_condition)
-        self._debug_pyomo_print(m)
-        print('Resource Map:')
+        # print('DEBUGG ... solve was unsuccessful!')
+        # print('DEBUGG ... status:', soln.solver.status)
+        # print('DEBUGG ... termination:', soln.solver.termination_condition)
+        # self._debug_pyomo_print(m)
+        # print('Resource Map:')
         pprint.pprint(m.resource_index_map)
         raise RuntimeError(f"Solve was unsuccessful! Status: {soln.solver.status} Termination: {soln.solver.termination_condition}")
       # try validating
-      print('DEBUGG ... validating ...')
+      # print('DEBUGG ... validating ...')
       validation_errs = self.validate(m.Components, m.Activity, m.Times, meta)
       if validation_errs:
         done_and_checked = False
-        print('DEBUGG ... validation concerns raised:')
+        # print('DEBUGG ... validation concerns raised:')
         for e in validation_errs:
-          print(f"DEBUGG ... ... Time {e['time_index']} ({e['time']}) \n" +
-                f"Component \"{e['component'].name}\" Resource \"{e['resource']}\": {e['msg']}")
+          # print(f"DEBUGG ... ... Time {e['time_index']} ({e['time']}) \n" +
+          #       f"Component \"{e['component'].name}\" Resource \"{e['resource']}\": {e['msg']}")
           self._create_production_limit(m, e)
         # go back and solve again
         # raise NotImplementedError('Validation failed, but idk how to handle that yet')
       else:
-        print('DEBUGG Solve successful and no validation concerns raised.')
+        # print('DEBUGG Solve successful and no validation concerns raised.')
         done_and_checked = True
       if attempts > 100:
         raise RuntimeError('Exceeded validation attempt limit!')
     if self.debug_mode:
       soln.write()
-      self._debug_print_soln(m)
+      # self._debug_print_soln(m)
     # return dict of numpy arrays
     result = self._retrieve_solution(m)
     return result
@@ -447,7 +447,7 @@ class Pyomo(Dispatcher):
       counter += 1
       name = name_template.format(i=counter)
     setattr(m, name, constr)
-    print(f'DEBUGG added validation constraint "{name}"')
+    # print(f'DEBUGG added validation constraint "{name}"')
 
   def _create_production_param(self, m, comp, values, tag=None):
     """
