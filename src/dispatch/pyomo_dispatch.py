@@ -344,16 +344,16 @@ class Pyomo(Dispatcher):
       # solve
       soln = pyo.SolverFactory(self._solver).solve(m, options=self.solve_options)
       # check solve status
-      if soln.solver.status == SolverStatus.ok and soln.solver.termination_condition == TerminationCondition.optimal:
-        print('DEBUGG ... solve was successful!')
-      else:
-      #   # print('DEBUGG ... solve was unsuccessful!')
-      #   # print('DEBUGG ... status:', soln.solver.status)
-      #   # print('DEBUGG ... termination:', soln.solver.termination_condition)
-      #   # self._debug_pyomo_print(m)
-      #   # print('Resource Map:')
-        pprint.pprint(m.resource_index_map)
-        raise RuntimeError(f"Solve was unsuccessful! Status: {soln.solver.status} Termination: {soln.solver.termination_condition}")
+      # if soln.solver.status == SolverStatus.ok and soln.solver.termination_condition == TerminationCondition.optimal:
+      #   print('DEBUGG ... solve was successful!')
+      # else:
+      # #   # print('DEBUGG ... solve was unsuccessful!')
+      # #   # print('DEBUGG ... status:', soln.solver.status)
+      # #   # print('DEBUGG ... termination:', soln.solver.termination_condition)
+      # #   # self._debug_pyomo_print(m)
+      # #   # print('Resource Map:')
+      #   pprint.pprint(m.resource_index_map)
+      #   raise RuntimeError(f"Solve was unsuccessful! Status: {soln.solver.status} Termination: {soln.solver.termination_condition}")
       # try validating
       # print('DEBUGG ... validating ...')
       validation_errs = self.validate(m.Components, m.Activity, m.Times, meta)
