@@ -186,7 +186,7 @@
     <Component name="H2_market">
       <demands resource="H2" dispatch="fixed">
         <capacity>
-          <fixed_value>-10</fixed_value>
+          <fixed_value>-1000</fixed_value>
         </capacity>
       </demands>
       <economics>
