@@ -1,0 +1,367 @@
+<HERON>
+  <Case name="illinois_smr">
+    <label name="scenario">ref</label>
+    <label name="location">braidwood</label>
+    <label name="co2_location">illinois</label>
+    <label name="fuel_region">illinois</label>
+    <mode>opt</mode>
+    <data_handling>
+      <inner_to_outer>csv</inner_to_outer>  
+    </data_handling>
+    <verbosity>debug</verbosity>
+    <num_arma_samples>2</num_arma_samples>
+    <time_discretization>
+      <time_variable>hour</time_variable>
+      <year_variable>Year</year_variable>
+      <end_time>23</end_time>
+      <num_steps>24</num_steps>
+    </time_discretization>
+    <economics>
+      <ProjectTime>1</ProjectTime>
+      <DiscountRate>0.1</DiscountRate>
+      <tax>0.2960</tax>
+      <inflation>0.0218</inflation>
+      <verbosity>0</verbosity>
+    </economics>
+    <optimization_settings>
+      <persistence>10</persistence>
+    </optimization_settings>
+    <strategy>BayesianOptimizer</strategy>
+    <dispatcher>
+      <pyomo />
+    </dispatcher>
+  </Case>
+
+  <Components>
+  
+  
+    <Component name="smr">
+      <produces resource="electricity" dispatch="fixed">
+        <capacity resource="electricity">
+          <fixed_value>720</fixed_value> 
+        </capacity>
+      </produces>
+      <economics>
+        <lifetime>60</lifetime>
+        <CashFlow name="smrCAPEX" type="one-time" taxable="False" inflation="None" mult_target="False">
+          <driver>
+            <variable>smr_capacity</variable>
+          </driver>
+          <reference_price>
+            <fixed_value>-5569000</fixed_value> 
+          <multiplier>0.7</multiplier></reference_price>
+          <reference_driver>
+            <fixed_value>1</fixed_value>
+          </reference_driver>
+        <depreciate>15</depreciate></CashFlow>
+        <CashFlow name="smrVOM" type="repeating" taxable="True" inflation="None" mult_target="False">
+          <driver>
+            <activity>electricity</activity>
+          </driver>
+          <reference_price>
+            <fixed_value>-23.2</fixed_value>
+          </reference_price>
+        </CashFlow>
+      </economics>
+    </Component>
+
+
+    <Component name="htse">
+      <produces resource="h2" dispatch="independent">
+        <consumes>electricity</consumes>
+        <capacity resource="electricity">
+          <!-- <sweep_values>-667.0,-333.5</sweep_values>  -->
+          <opt_bounds>-667.0, -333.5</opt_bounds>
+        </capacity>
+        <minimum resource="electricity">
+          
+          <variable>htse_capacity</variable>
+          <multiplier>0.0085</multiplier>
+        </minimum>
+        <transfer>
+          <linear>
+            <rate resource="electricity">-1</rate>
+            <rate resource="h2">25.13</rate>
+            
+          </linear>
+        </transfer>
+      </produces>
+      <economics>
+        <lifetime>30</lifetime>
+        <CashFlow name="htseCAPEX" type="one-time" taxable="False" inflation="None" mult_target="False">
+          <driver>
+            <variable>htse_capacity</variable>
+          </driver>
+          <reference_price>
+            <fixed_value>-702600000</fixed_value> 
+          </reference_price>
+          <reference_driver>
+            <fixed_value>-1076</fixed_value>
+          </reference_driver>
+          <scaling_factor_x>
+            <fixed_value>0.908</fixed_value>
+          </scaling_factor_x>
+          <depreciate>15</depreciate>
+        </CashFlow>
+        <CashFlow name="htseFOM" type="repeating" period="year" taxable="False" inflation="None" mult_target="False">
+          <driver>
+            <variable>htse_capacity</variable>
+          </driver>
+          <reference_price>
+            <fixed_value>30320</fixed_value>
+            
+          </reference_price>
+        </CashFlow>
+        <CashFlow name="htseVOM" type="repeating" taxable="True" inflation="None" mult_target="False">
+          <driver>
+            <activity>electricity</activity>
+          </driver>
+          <reference_price>
+            <fixed_value>3.168</fixed_value>
+            
+          </reference_price>
+        </CashFlow>
+        <CashFlow name="htseELEC_CAP_MARKET" period="year" type="repeating" taxable="False" inflation="None" mult_target="False">
+          
+          <driver>
+            <variable>htse_capacity</variable>
+          </driver>
+          <reference_price>
+            <fixed_value>27933.45</fixed_value>
+            
+          </reference_price>
+        </CashFlow>
+      </economics>
+    </Component>
+
+    <Component name="meoh">
+      <produces resource="naphtha,diesel,jet_fuel" dispatch="fixed">
+        <consumes>h2,electricity</consumes>
+        <capacity resource="h2">
+          <!-- <sweep_values>-16761.7,-8380.85</sweep_values> -->
+          <opt_bounds>-16761.7, -8380.85</opt_bounds>
+        </capacity>
+        <transfer>
+          <linear>
+            
+            <rate resource="h2">-1.0</rate>
+            <rate resource="naphtha">0.0923</rate>
+            <rate resource="jet_fuel">0.4135</rate>
+            <rate resource="diesel">1.6097</rate>
+         <rate resource="electricity">-0.0004</rate></linear>
+        </transfer>
+      </produces>
+      <economics>
+        <lifetime>30</lifetime>
+        <CashFlow name="meohCAPEX" type="one-time" taxable="False" inflation="None" mult_target="False">
+          <driver>
+            <variable>meoh_capacity</variable>
+          </driver>
+          <reference_driver>
+            <fixed_value>-22260.27</fixed_value> 
+          </reference_driver>
+          <reference_price>
+            <fixed_value>-614918317.6</fixed_value> 
+          </reference_price>
+          <scaling_factor_x>
+            <fixed_value>0.5755</fixed_value>
+            
+          </scaling_factor_x>
+          <depreciate>15</depreciate>
+        </CashFlow>
+        <CashFlow name="meohFOM" type="repeating" period="year" taxable="False" inflation="None" mult_target="False">
+          <driver>
+            <fixed_value>1</fixed_value>
+          </driver>
+          <reference_price>
+            <fixed_value>-27050057.67</fixed_value>
+          </reference_price>
+        </CashFlow>
+        <CashFlow name="meohVOM" type="repeating" period="year" taxable="True" inflation="None" mult_target="False">
+          <driver>
+            <fixed_value>1</fixed_value>
+          </driver>
+          <reference_price>
+            <fixed_value>-6314321.88</fixed_value>
+          </reference_price>
+        </CashFlow>
+        <CashFlow name="co2_shipping" period="year" type="repeating" taxable="True" inflation="None" mult_target="False">
+          <driver>
+            <fixed_value>1</fixed_value>
+          </driver>
+          <reference_driver>
+            <fixed_value>1</fixed_value>
+          </reference_driver>
+          <reference_price>
+            <Function method="co2_supply_curve_meoh">functions</Function>
+          </reference_price>
+        </CashFlow>
+        <CashFlow name="h2_ptc" period="hour" type="repeating" taxable="False" inflation="None" mult_target="False">
+          <driver>
+            <activity>h2</activity>
+          </driver>
+          <reference_price>
+            <Function method="h2_ptc_meoh">functions</Function>
+          </reference_price>
+        </CashFlow>
+      </economics>
+    </Component>
+  
+    <Component name="electricity_market">
+      <demands resource="electricity" dispatch="dependent">
+        <capacity>
+          <fixed_value>-1e200</fixed_value>
+        </capacity>
+      </demands>
+      <economics>
+        <lifetime>30</lifetime>
+        <CashFlow name="e_sales" type="repeating" period="hour" taxable="True" inflation="none" mult_target="False">
+          <driver>
+            <activity>electricity</activity>
+            <multiplier>-1</multiplier>
+          </driver>
+          <reference_price>
+            <ARMA variable="price">price</ARMA> 
+          </reference_price>
+          <reference_driver>
+            <fixed_value>1</fixed_value>
+          </reference_driver>
+        </CashFlow>
+      </economics>
+    </Component>
+
+    <Component name="naphtha_market">
+      <demands resource="naphtha" dispatch="dependent">
+        <capacity>
+          <fixed_value>-1e200</fixed_value>
+        </capacity>
+      </demands>
+      <economics>
+        <lifetime>30</lifetime>
+        <CashFlow name="naphtha_sales" type="repeating" taxable="True" inflation="none" mult_target="False">
+          <driver>
+            <activity>naphtha</activity>
+            <multiplier>-1.25</multiplier>
+          </driver>
+          <reference_price>
+            <Function method="naphtha_price">functions</Function>
+          </reference_price>
+        </CashFlow>
+      </economics>
+    </Component>
+
+    <Component name="jet_fuel_market">
+      <demands resource="jet_fuel" dispatch="dependent">
+        <capacity>
+          <fixed_value>-1e200</fixed_value>
+        </capacity>
+      </demands>
+      <economics>
+        <lifetime>30</lifetime>
+        <CashFlow name="jet_fuel_sales" type="repeating" taxable="True" inflation="none" mult_target="False">
+          <driver>
+            <activity>jet_fuel</activity>
+            <multiplier>-1.25</multiplier>
+          </driver>
+          <reference_price>
+            <Function method="jet_fuel_price">functions</Function>
+          </reference_price>
+        </CashFlow>
+      </economics>
+    </Component>
+
+    <Component name="diesel_market">
+      <demands resource="diesel" dispatch="dependent">
+        <capacity>
+          <fixed_value>-1e200</fixed_value>
+        </capacity>
+      </demands>
+      <economics>
+        <lifetime>30</lifetime>
+        <CashFlow name="diesel_sales" type="repeating" taxable="True" inflation="none" mult_target="False">
+          <driver>
+            <activity>diesel</activity>
+            <multiplier>-1.25</multiplier>
+          </driver>
+          <reference_price>
+            <Function method="diesel_price">functions</Function>
+          </reference_price>
+        </CashFlow>
+      </economics>
+    </Component>
+
+  
+    <Component name="h2_storage">
+      <stores resource="h2" dispatch="independent">
+        <capacity resource="h2">
+          <!-- <sweep_values>10.0,5.0</sweep_values>  -->
+          <opt_bounds>5.0, 10.0</opt_bounds>
+        </capacity>
+        <initial_stored>
+          <fixed_value>0.0</fixed_value>
+          
+        </initial_stored>
+        <RTE>0.9</RTE>
+        
+      </stores>
+      <economics>
+        <lifetime>30</lifetime>
+        <CashFlow name="storageCAPEX" inflation="none" mult_target="False" taxable="False" type="one-time">
+          <driver>
+            <variable>h2_storage_capacity</variable>
+          </driver>
+          <reference_price>
+            <fixed_value>-500</fixed_value>
+            
+          </reference_price>
+          <depreciate>15</depreciate>
+        </CashFlow>
+      </economics>
+    </Component>
+
+    
+    <Component name="h2_import">
+      <produces resource="h2" dispatch="independent">
+        <capacity resource="h2">
+          <fixed_value>1e200</fixed_value> 
+        </capacity>
+      </produces>
+      <economics>
+        <lifetime>60</lifetime>
+        <CashFlow name="h2IMPORTS" type="repeating" taxable="True" inflation="None" mult_target="False">
+          <driver>
+            <activity>h2</activity>
+          </driver>
+          <reference_price>
+            <fixed_value>-1000000</fixed_value>
+          </reference_price>
+        </CashFlow>
+      </economics>
+    </Component>
+
+    <Component name="h2_export">
+      <demands resource="h2" dispatch="independent">
+        <capacity resource="h2">
+          <fixed_value>-1e200</fixed_value> 
+        </capacity>
+      </demands>
+      <economics>
+        <lifetime>60</lifetime>
+        <CashFlow name="h2EXPORTS" type="repeating" taxable="True" inflation="None" mult_target="False">
+          <driver>
+            <activity>h2</activity>
+          </driver>
+          <reference_price>
+            <fixed_value>1000000</fixed_value>
+          </reference_price>
+        </CashFlow>
+      </economics>
+    </Component>
+
+  </Components>
+
+  <DataGenerators>
+    <ARMA name="price" variable="price">./braidwood_arma_12-21.pk</ARMA>
+    <Function name="functions">./functions.py</Function>
+  </DataGenerators>
+</HERON>
