@@ -9,10 +9,10 @@ from .SyntheticHistory import SyntheticHistory
 from .StaticHistory import StaticHistory
 from .ROM import ROM
 from .Function import Function
-from .Parametric import Parametric, FixedValue, OptBounds, SweepValues
-from .Linear import Linear
+from .Parametric import FixedValue, OptBounds, SweepValues
 from .Variable import Variable
 from .Activity import Activity
+from .RandomVariable import RandomVariable
 
 class ValuedParamFactory(EntityFactory):
   """
@@ -74,16 +74,10 @@ factory.registerType('ARMA', SyntheticHistory)
 factory.registerType('ROM', ROM)
 factory.registerType('Function', Function)
 factory.registerType('activity', Activity)
-# ratios, transfers
-factory.registerType('linear', Linear)
-# TODO add: ROM
-
-# TODO are transfer functions and valued evaluations really the same creature?
+factory.registerType('uncertainty', RandomVariable)
 
 # map of "kinds" of ValuedParams to the default acceptable ValuedParam types
 allowable = {}
-# transfer functions, such as producing components' transfer functions
-allowable['transfer'] = ['linear', 'Function']
 # single evaluations, like cashflow prices and component capacities
 allowable['singular'] = [
   'fixed_value',
@@ -93,7 +87,8 @@ allowable['singular'] = [
   'ARMA',
   'Function',
   'ROM',
-  'CSV'
+  'CSV',
+  'uncertainty'
 ]
 # evaluations available only after dispatch (e.g. for economics)
 ## for example, we can't base a capacity on the dispatch activity ... right?
