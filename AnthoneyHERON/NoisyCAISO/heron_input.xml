@@ -50,7 +50,7 @@
             <uncertainty>
               <Normal name='NPP_capex_dist'>
                 <mean>-113.117e6</mean>
-                <sigma>5.38</sigma>
+                <sigma>5.4e6</sigma>
               </Normal>
             </uncertainty>
           </reference_price>
@@ -169,7 +169,7 @@
             <uncertainty>
               <Normal name='NPP_capex_dist'>
                 <mean>-0.600e6</mean>
-                <sigma>0.143</sigma>
+                <sigma>0.143e6</sigma>
               </Normal>
             </uncertainty>
           </reference_price>
